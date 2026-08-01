@@ -12,11 +12,11 @@ Working:
 
 - account creation and login
 - Single Map room creation and search
+- Map Vote room creation and search
 - joining and leaving rooms
 - concurrent rooms
 - host/client signaling
 
 Not yet working or verified:
 
-- Map Vote
 - play between devices on separate Internet connections

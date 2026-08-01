@@ -19,6 +19,7 @@ const (
 	maxHostAddressSize       = 255
 	maxMatchmakingTextBytes  = 31
 	maxFindResults           = 50
+	matchmakingFindQueryKey  = uint32(MatchmakingServiceID)<<8 | uint32(MatchmakingTaskFind)
 )
 
 var (
@@ -31,8 +32,7 @@ var (
 type MatchmakingSessionID [matchmakingSessionIDSize]byte
 
 // MatchmakingAttributes mirrors fields whose gameplay meanings are not all
-// known. The names use their offsets in the original class. Fields 0x11c and
-// 0x158 contain the lowercase DJB2 hash used by the private query.
+// known. The names use their offsets in the original class.
 type MatchmakingAttributes struct {
 	AppU32At11C    uint32
 	AppU32At120    uint32
@@ -53,8 +53,8 @@ type MatchmakingInfo struct {
 }
 
 type MatchmakingQuery struct {
-	AttributeHash  uint32
-	AttributeValue int32
+	Key   uint32
+	Value int32
 }
 
 type MatchmakingRequest struct {
@@ -115,13 +115,13 @@ func parseMatchmakingRequest(payload []byte, seed uint32) (MatchmakingRequest, e
 		if request.NumParams != 1 || request.MaxResults > maxFindResults {
 			return MatchmakingRequest{}, ErrUnsupportedMatchmakingQuery
 		}
-		request.Query.AttributeHash, err = reader.ReadUint32()
+		request.Query.Key, err = reader.ReadUint32()
 		if err != nil {
-			return MatchmakingRequest{}, malformedMatchmaking("read find attribute hash", err)
+			return MatchmakingRequest{}, malformedMatchmaking("read find query key", err)
 		}
-		request.Query.AttributeValue, err = reader.ReadInt32()
+		request.Query.Value, err = reader.ReadInt32()
 		if err != nil {
-			return MatchmakingRequest{}, malformedMatchmaking("read find attribute value", err)
+			return MatchmakingRequest{}, malformedMatchmaking("read find query value", err)
 		}
 	default:
 		return MatchmakingRequest{}, fmt.Errorf("%w: %d", ErrUnsupportedMatchmakingTask, task)

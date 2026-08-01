@@ -222,7 +222,7 @@ func TestTwoLobbyClientsCreateAndFindSameSession(t *testing.T) {
 	findWriter.WriteUint32(1)
 	findWriter.WriteUint32(0)
 	findWriter.WriteUint32(50)
-	findWriter.WriteUint32(info.Attributes.AppU32At11C)
+	findWriter.WriteUint32(matchmakingFindQueryKey)
 	findWriter.WriteInt32(info.Attributes.AppI32At15C)
 	if err := bitdemon.WriteFrame(finderClient, makeEncryptedTestRequest(t, finderKey, 1, MatchmakingServiceID, findWriter.Bytes())); err != nil {
 		t.Fatal(err)

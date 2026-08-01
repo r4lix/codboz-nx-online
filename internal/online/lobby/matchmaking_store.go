@@ -136,7 +136,7 @@ func (store *MemoryMatchmakingStore) Find(query MatchmakingQuery, offset, maximu
 	store.mu.RLock()
 	sessions := make([]storedMatchmakingSession, 0, len(store.byID))
 	for _, session := range store.byID {
-		if matchesPrivateQuery(session.info, query) {
+		if matchesQuery(session.info, query) {
 			sessions = append(sessions, session)
 		}
 	}
@@ -157,11 +157,9 @@ func (store *MemoryMatchmakingStore) Find(query MatchmakingQuery, offset, maximu
 	return result, total
 }
 
-func matchesPrivateQuery(info MatchmakingInfo, query MatchmakingQuery) bool {
-	attributes := info.Attributes
-	return attributes.AppU32At11C == query.AttributeHash &&
-		attributes.AppU32At158 == query.AttributeHash &&
-		attributes.AppI32At15C == query.AttributeValue
+func matchesQuery(info MatchmakingInfo, query MatchmakingQuery) bool {
+	return query.Key == matchmakingFindQueryKey &&
+		info.Attributes.AppI32At15C == query.Value
 }
 
 func (store *MemoryMatchmakingStore) DeleteOwner(owner uint64) {

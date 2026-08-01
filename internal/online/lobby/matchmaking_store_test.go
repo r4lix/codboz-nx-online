@@ -36,13 +36,16 @@ func TestMemoryMatchmakingStoreLifecycleAndOwnership(t *testing.T) {
 	if err := store.Update(10, first.SessionID, updated); err != nil {
 		t.Fatal(err)
 	}
-	query := MatchmakingQuery{AttributeHash: 21, AttributeValue: 1}
+	query := MatchmakingQuery{Key: matchmakingFindQueryKey, Value: 1}
 	page, total := store.Find(query, 0, 1)
 	if total != 2 || len(page) != 1 || page[0].SessionID != first.SessionID || !bytes.Equal(page[0].HostAddress, updated.HostAddress) {
 		t.Fatalf("first page = %#v, total=%d", page, total)
 	}
-	if results, total := store.Find(MatchmakingQuery{AttributeHash: 22, AttributeValue: 1}, 0, 2); len(results) != 0 || total != 0 {
-		t.Fatalf("mismatched private query returned %#v, total=%d", results, total)
+	if results, total := store.Find(MatchmakingQuery{Key: matchmakingFindQueryKey, Value: 2}, 0, 2); len(results) != 0 || total != 0 {
+		t.Fatalf("mismatched query value returned %#v, total=%d", results, total)
+	}
+	if results, total := store.Find(MatchmakingQuery{Key: 0x1506, Value: 1}, 0, 2); len(results) != 0 || total != 0 {
+		t.Fatalf("unknown query key returned %#v, total=%d", results, total)
 	}
 	page[0].HostAddress[0] = 0
 	again, _ := store.Find(query, 0, 1)

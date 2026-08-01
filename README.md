@@ -3,13 +3,12 @@
 Self-hosted Play Online backend for
 [`cod-boz-port`](https://github.com/Producdevity/cod-boz-port).
 
-It handles login, Single Map matchmaking, peer signaling, and endpoint
+It handles login, matchmaking, peer signaling, and endpoint
 discovery. Gameplay and voice chat remain peer-to-peer. Players only meet when
 they configure the same server.
 
 Two physical devices have completed a match through this server on a routed
 local network. Play across separate Internet connections still needs testing.
-Map Vote is not implemented yet.
 
 ## Run locally
 

@@ -135,7 +135,7 @@ func TestHandlerMatchmakingReplyShapes(t *testing.T) {
 		Task:       MatchmakingTaskFind,
 		NumParams:  1,
 		MaxResults: 50,
-		Query:      MatchmakingQuery{AttributeHash: 21, AttributeValue: 1},
+		Query:      MatchmakingQuery{Key: matchmakingFindQueryKey, Value: 1},
 	})
 	if err != nil {
 		t.Fatal(err)
@@ -184,7 +184,7 @@ func TestHandlerFindReplyAvoidsReservedTransportLength(t *testing.T) {
 		Task:       MatchmakingTaskFind,
 		NumParams:  1,
 		MaxResults: 2,
-		Query:      MatchmakingQuery{AttributeHash: 21, AttributeValue: 1},
+		Query:      MatchmakingQuery{Key: matchmakingFindQueryKey, Value: 1},
 	})
 	if err != nil {
 		t.Fatal(err)
@@ -280,7 +280,7 @@ func TestParseMatchmakingUpdateDeleteAndFindRequests(t *testing.T) {
 		t.Fatal(err)
 	}
 	if find.Task != MatchmakingTaskFind || find.NumParams != 1 || find.Offset != 0 || find.MaxResults != 50 ||
-		find.Query != (MatchmakingQuery{AttributeHash: 0x11223344, AttributeValue: 1}) {
+		find.Query != (MatchmakingQuery{Key: 0x11223344, Value: 1}) {
 		t.Fatalf("find = %#v", find)
 	}
 }
