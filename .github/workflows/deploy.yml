@@ -1,0 +1,58 @@
+name: Deploy
+
+on:
+  push:
+    branches:
+      - master
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: production
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    name: Production
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    environment: production
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+      - name: Set up Go
+        uses: actions/setup-go@v6
+        with:
+          go-version-file: go.mod
+      - name: Test and build
+        run: |
+          make check
+          make build-linux-amd64
+      - name: Configure SSH
+        env:
+          DEPLOY_SSH_KEY: ${{ secrets.DEPLOY_SSH_KEY }}
+          DEPLOY_KNOWN_HOSTS: ${{ secrets.DEPLOY_KNOWN_HOSTS }}
+        run: |
+          test -n "$DEPLOY_SSH_KEY"
+          test -n "$DEPLOY_KNOWN_HOSTS"
+          install -d -m 0700 "$HOME/.ssh"
+          printf '%s\n' "$DEPLOY_SSH_KEY" >"$HOME/.ssh/codboz_deploy"
+          printf '%s\n' "$DEPLOY_KNOWN_HOSTS" >"$HOME/.ssh/known_hosts"
+          chmod 0600 "$HOME/.ssh/codboz_deploy" "$HOME/.ssh/known_hosts"
+      - name: Upload and install
+        env:
+          DEPLOY_HOST: ${{ secrets.DEPLOY_HOST }}
+        run: |
+          test -n "$DEPLOY_HOST"
+          binary=dist/codboz-online-server.linux-amd64
+          upload_dir="/opt/codboz/uploads/$GITHUB_SHA"
+          checksum=$(sha256sum "$binary" | awk '{print $1}')
+          ssh=(ssh -o BatchMode=yes -o StrictHostKeyChecking=yes -i "$HOME/.ssh/codboz_deploy")
+          scp=(scp -o BatchMode=yes -o StrictHostKeyChecking=yes -i "$HOME/.ssh/codboz_deploy")
+          "${ssh[@]}" "codboz@$DEPLOY_HOST" "install -d -m 0700 '$upload_dir'"
+          "${scp[@]}" "$binary" "codboz@$DEPLOY_HOST:$upload_dir/codboz-online-server"
+          "${ssh[@]}" "codboz@$DEPLOY_HOST" "/usr/local/bin/codboz-install '$GITHUB_SHA' '$checksum'"

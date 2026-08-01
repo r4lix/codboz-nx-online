@@ -1,0 +1,13 @@
+.DS_Store
+.env
+.env.*
+!.env.example
+.idea/
+.vscode/
+
+/bin/
+/dist/
+/data/
+/coverage.out
+*.prof
+*.test
