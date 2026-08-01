@@ -157,9 +157,23 @@ func (store *MemoryMatchmakingStore) Find(query MatchmakingQuery, offset, maximu
 	return result, total
 }
 
+func (store *MemoryMatchmakingStore) HasSessions() bool {
+	store.mu.RLock()
+	hasSessions := len(store.byID) != 0
+	store.mu.RUnlock()
+	return hasSessions
+}
+
 func matchesQuery(info MatchmakingInfo, query MatchmakingQuery) bool {
-	return query.Key == matchmakingFindQueryKey &&
-		info.Attributes.AppI32At15C == query.Value
+	if info.Attributes.AppI32At15C != query.Value {
+		return false
+	}
+	if query.Key == matchmakingWildcardKey {
+		return true
+	}
+	attributes := info.Attributes
+	return attributes.AppU32At11C == query.Key &&
+		attributes.AppU32At158 == query.Key
 }
 
 func (store *MemoryMatchmakingStore) DeleteOwner(owner uint64) {

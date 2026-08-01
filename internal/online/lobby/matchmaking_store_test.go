@@ -11,6 +11,9 @@ func TestMemoryMatchmakingStoreLifecycleAndOwnership(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
+	if store.HasSessions() {
+		t.Fatal("new store reports an active session")
+	}
 	random := bytes.NewReader([]byte{
 		1, 2, 3, 4, 5, 6, 7, 8,
 		9, 10, 11, 12, 13, 14, 15, 16,
@@ -19,11 +22,16 @@ func TestMemoryMatchmakingStoreLifecycleAndOwnership(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
+	if !store.HasSessions() {
+		t.Fatal("store does not report its active session")
+	}
 	if first.SessionID != (MatchmakingSessionID{1, 2, 3, 4, 5, 6, 7, 8}) || first.NumPlayers != 1 {
 		t.Fatalf("first session = %#v", first)
 	}
 	secondRequest := matchmakingFixture()
 	secondRequest.HostAddress[0] = 9
+	secondRequest.Attributes.AppU32At11C = 22
+	secondRequest.Attributes.AppU32At158 = 22
 	second, err := store.Create(20, secondRequest, random)
 	if err != nil {
 		t.Fatal(err)
@@ -36,16 +44,20 @@ func TestMemoryMatchmakingStoreLifecycleAndOwnership(t *testing.T) {
 	if err := store.Update(10, first.SessionID, updated); err != nil {
 		t.Fatal(err)
 	}
-	query := MatchmakingQuery{Key: matchmakingFindQueryKey, Value: 1}
+	query := MatchmakingQuery{Key: 21, Value: 1}
 	page, total := store.Find(query, 0, 1)
-	if total != 2 || len(page) != 1 || page[0].SessionID != first.SessionID || !bytes.Equal(page[0].HostAddress, updated.HostAddress) {
+	if total != 1 || len(page) != 1 || page[0].SessionID != first.SessionID || !bytes.Equal(page[0].HostAddress, updated.HostAddress) {
 		t.Fatalf("first page = %#v, total=%d", page, total)
 	}
-	if results, total := store.Find(MatchmakingQuery{Key: matchmakingFindQueryKey, Value: 2}, 0, 2); len(results) != 0 || total != 0 {
+	if results, total := store.Find(MatchmakingQuery{Key: 21, Value: 2}, 0, 2); len(results) != 0 || total != 0 {
 		t.Fatalf("mismatched query value returned %#v, total=%d", results, total)
 	}
-	if results, total := store.Find(MatchmakingQuery{Key: 0x1506, Value: 1}, 0, 2); len(results) != 0 || total != 0 {
+	if results, total := store.Find(MatchmakingQuery{Key: 23, Value: 1}, 0, 2); len(results) != 0 || total != 0 {
 		t.Fatalf("unknown query key returned %#v, total=%d", results, total)
+	}
+	wildcard, total := store.Find(MatchmakingQuery{Key: matchmakingWildcardKey, Value: 1}, 0, 2)
+	if len(wildcard) != 2 || total != 2 {
+		t.Fatalf("wildcard query returned %#v, total=%d", wildcard, total)
 	}
 	page[0].HostAddress[0] = 0
 	again, _ := store.Find(query, 0, 1)
@@ -53,7 +65,7 @@ func TestMemoryMatchmakingStoreLifecycleAndOwnership(t *testing.T) {
 		t.Fatal("Find() exposed mutable host address storage")
 	}
 	store.DeleteOwner(10)
-	remaining, total := store.Find(query, 0, 2)
+	remaining, total := store.Find(MatchmakingQuery{Key: 22, Value: 1}, 0, 2)
 	if total != 1 || len(remaining) != 1 || remaining[0].SessionID != second.SessionID {
 		t.Fatalf("remaining sessions = %#v, total=%d", remaining, total)
 	}
@@ -62,6 +74,9 @@ func TestMemoryMatchmakingStoreLifecycleAndOwnership(t *testing.T) {
 	}
 	if _, total := store.Find(query, 0, 2); total != 0 {
 		t.Fatalf("total after delete = %d, want 0", total)
+	}
+	if store.HasSessions() {
+		t.Fatal("empty store reports an active session")
 	}
 }
 

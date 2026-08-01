@@ -74,6 +74,7 @@ func run(args []string, logger *log.Logger) error {
 	stunHandler, err := stun.NewResponder(stun.ResponderConfig{
 		SourceAddress:  opts.stunSource,
 		ChangedAddress: opts.stunSource,
+		HasSessions:    matches.HasSessions,
 	})
 	if err != nil {
 		return fmt.Errorf("configure STUN responder: %w", err)

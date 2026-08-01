@@ -135,7 +135,7 @@ func TestHandlerMatchmakingReplyShapes(t *testing.T) {
 		Task:       MatchmakingTaskFind,
 		NumParams:  1,
 		MaxResults: 50,
-		Query:      MatchmakingQuery{Key: matchmakingFindQueryKey, Value: 1},
+		Query:      MatchmakingQuery{Key: matchmakingWildcardKey, Value: 1},
 	})
 	if err != nil {
 		t.Fatal(err)
@@ -184,7 +184,7 @@ func TestHandlerFindReplyAvoidsReservedTransportLength(t *testing.T) {
 		Task:       MatchmakingTaskFind,
 		NumParams:  1,
 		MaxResults: 2,
-		Query:      MatchmakingQuery{Key: matchmakingFindQueryKey, Value: 1},
+		Query:      MatchmakingQuery{Key: matchmakingWildcardKey, Value: 1},
 	})
 	if err != nil {
 		t.Fatal(err)

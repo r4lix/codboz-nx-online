@@ -19,16 +19,18 @@ const (
 	bindingRequestType  uint16 = 0x0001
 	bindingResponseType uint16 = 0x0101
 
-	mappedAddressAttribute  uint16 = 0x0001
-	changeRequestAttribute  uint16 = 0x0003
-	sourceAddressAttribute  uint16 = 0x0004
-	changedAddressAttribute uint16 = 0x0005
+	mappedAddressAttribute   uint16 = 0x0001
+	changeRequestAttribute   uint16 = 0x0003
+	sourceAddressAttribute   uint16 = 0x0004
+	changedAddressAttribute  uint16 = 0x0005
+	matchmakingModeAttribute uint16 = 0xc0d0
 
 	changeIPFlag   uint32 = 0x00000004
 	changePortFlag uint32 = 0x00000002
 	changeFlagMask        = changeIPFlag | changePortFlag
 
-	ipv4Family byte = 0x01
+	ipv4Family               byte = 0x01
+	matchmakingModeValueSize      = 4
 )
 
 var (
@@ -121,6 +123,22 @@ func BuildBindingResponse(request BindingRequest, endpoints BindingResponseEndpo
 	offset = putAddressAttribute(response, offset, sourceAddressAttribute, endpoints.SourceAddress)
 	putAddressAttribute(response, offset, changedAddressAttribute, endpoints.ChangedAddress)
 	return response, nil
+}
+
+func appendMatchmakingMode(response []byte, mode byte) []byte {
+	if mode > 1 || len(response) < HeaderSize {
+		return response
+	}
+	attributeSize := attributeHeaderSize + matchmakingModeValueSize
+	result := make([]byte, len(response)+attributeSize)
+	copy(result, response)
+	binary.BigEndian.PutUint16(result[2:4], uint16(len(result)-HeaderSize))
+	offset := len(response)
+	binary.BigEndian.PutUint16(result[offset:offset+2], matchmakingModeAttribute)
+	binary.BigEndian.PutUint16(result[offset+2:offset+4], matchmakingModeValueSize)
+	copy(result[offset+4:offset+7], "BOZ")
+	result[offset+7] = mode
+	return result
 }
 
 func validateEndpoint(role string, endpoint netip.AddrPort) error {

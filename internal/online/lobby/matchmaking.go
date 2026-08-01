@@ -15,11 +15,11 @@ const (
 	MatchmakingTaskDelete byte = 0x03
 	MatchmakingTaskFind   byte = 0x05
 
-	matchmakingSessionIDSize = 8
-	maxHostAddressSize       = 255
-	maxMatchmakingTextBytes  = 31
-	maxFindResults           = 50
-	matchmakingFindQueryKey  = uint32(MatchmakingServiceID)<<8 | uint32(MatchmakingTaskFind)
+	matchmakingSessionIDSize        = 8
+	maxHostAddressSize              = 255
+	maxMatchmakingTextBytes         = 31
+	maxFindResults                  = 50
+	matchmakingWildcardKey   uint32 = 5381
 )
 
 var (

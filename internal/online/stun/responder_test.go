@@ -25,15 +25,52 @@ func TestResponderAnswersObservedZeroChangeRequest(t *testing.T) {
 		t.Fatal(err)
 	}
 	if !bytes.Equal(connection.payload, mustDecodeHex(t,
-		"01010024"+
+		"0101002c"+
 			"000102030405060708090a0b0c0d0e0f"+
 			"000100080001c3c5cb007109"+
 			"0004000800010d96c000020a"+
-			"0005000800010d96c000020a")) {
+			"0005000800010d96c000020a"+
+			"c0d00004424f5a00")) {
 		t.Fatalf("response = %x", connection.payload)
 	}
 	if connection.peer.String() != peer.String() {
 		t.Fatalf("response peer = %v, want %v", connection.peer, peer)
+	}
+}
+
+func TestResponderElectsOneImmediatePublisher(t *testing.T) {
+	responder, err := NewResponder(ResponderConfig{
+		SourceAddress:  netip.MustParseAddrPort("192.0.2.10:3478"),
+		ChangedAddress: netip.MustParseAddrPort("192.0.2.10:3478"),
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	now := time.Unix(1_800_000_000, 0)
+	first := netip.MustParseAddrPort("203.0.113.1:50001")
+	second := netip.MustParseAddrPort("203.0.113.1:50002")
+	if mode := responder.matchmakingMode(first, now); mode != 0 {
+		t.Fatalf("first mode = %d", mode)
+	}
+	if mode := responder.matchmakingMode(first, now.Add(time.Second)); mode != 0 {
+		t.Fatalf("cached first mode = %d", mode)
+	}
+	if mode := responder.matchmakingMode(second, now.Add(time.Second)); mode != 1 {
+		t.Fatalf("second mode = %d", mode)
+	}
+}
+
+func TestResponderUsesSearchModeWhileRoomsExist(t *testing.T) {
+	responder, err := NewResponder(ResponderConfig{
+		SourceAddress:  netip.MustParseAddrPort("192.0.2.10:3478"),
+		ChangedAddress: netip.MustParseAddrPort("192.0.2.10:3478"),
+		HasSessions:    func() bool { return true },
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if mode := responder.matchmakingMode(netip.MustParseAddrPort("203.0.113.1:50001"), time.Now()); mode != 1 {
+		t.Fatalf("mode with active rooms = %d", mode)
 	}
 }
 

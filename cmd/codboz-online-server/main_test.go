@@ -104,7 +104,7 @@ func TestRuntimeHandlerDropsSTUNWriteErrorAndContinues(t *testing.T) {
 	if err := handler.HandleUDP(context.Background(), connection, peer, request); err != nil {
 		t.Fatalf("second HandleUDP() error = %v", err)
 	}
-	if connection.writeCalls != 2 || len(connection.successfulPayload) != stun.BindingResponseSize {
+	if connection.writeCalls != 2 || len(connection.successfulPayload) != stun.BindingResponseSize+8 {
 		t.Fatalf("writes = %d, successful payload bytes = %d", connection.writeCalls, len(connection.successfulPayload))
 	}
 }
