@@ -1,0 +1,67 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+readonly install_root=/opt/codboz
+readonly service=codboz-online-server.service
+
+fail() {
+  echo "codboz-install: $*" >&2
+  exit 1
+}
+
+if [[ $(id -un) != codboz ]]; then
+  fail "must run as the codboz user"
+fi
+if [[ $# -ne 2 ]]; then
+  fail "usage: codboz-install RELEASE SHA256"
+fi
+
+readonly release=$1
+readonly expected_sha256=$2
+[[ $release =~ ^[0-9a-f]{40}$ ]] || fail "release must be a Git commit SHA"
+[[ $expected_sha256 =~ ^[0-9a-f]{64}$ ]] || fail "invalid SHA-256"
+
+readonly upload_dir="$install_root/uploads/$release"
+readonly uploaded_binary="$upload_dir/codboz-online-server"
+readonly live_binary="$install_root/bin/codboz-online-server"
+readonly next_binary="$install_root/bin/.codboz-online-server.next"
+readonly previous_binary="$install_root/bin/.codboz-online-server.previous"
+
+exec 9>"$install_root/.deploy.lock"
+flock -n 9 || fail "another deployment is in progress"
+
+[[ -f $uploaded_binary && ! -L $uploaded_binary ]] || fail "uploaded binary is missing or is not a regular file"
+actual_sha256=$(sha256sum "$uploaded_binary" | awk '{print $1}')
+[[ $actual_sha256 == "$expected_sha256" ]] || fail "uploaded binary checksum does not match"
+
+install -m 0755 "$uploaded_binary" "$next_binary"
+"$next_binary" --help >/dev/null 2>&1 || fail "uploaded binary could not start"
+
+had_previous=0
+if [[ -f $live_binary ]]; then
+  install -m 0755 "$live_binary" "$previous_binary"
+  had_previous=1
+fi
+mv -f "$next_binary" "$live_binary"
+
+if sudo /usr/bin/systemctl restart "$service"; then
+  for _ in {1..15}; do
+    if /usr/bin/systemctl is-active --quiet "$service" &&
+      ss -H -ltn 'sport = :3074' | grep -q . &&
+      ss -H -lun 'sport = :3478' | grep -q .; then
+      rm -f "$uploaded_binary"
+      rmdir "$upload_dir"
+      echo "deployed $release"
+      exit 0
+    fi
+    sleep 1
+  done
+fi
+
+if [[ $had_previous -eq 1 ]]; then
+  mv -f "$previous_binary" "$live_binary"
+  sudo /usr/bin/systemctl restart "$service" || true
+  fail "new release did not become ready; restored the previous binary"
+fi
+
+fail "first release did not become ready"

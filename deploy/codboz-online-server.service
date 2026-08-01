@@ -1,0 +1,26 @@
+[Unit]
+Description=COD BOZ Play Online server
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+User=codboz
+Group=codboz
+WorkingDirectory=/var/lib/codboz
+EnvironmentFile=/etc/codboz-online-server.env
+ExecStart=/opt/codboz/bin/codboz-online-server --data-dir /var/lib/codboz --tcp-listen 0.0.0.0:3074 --udp-listen 0.0.0.0:3478 --stun-source-address ${CODBOZ_STUN_ADDRESS}
+Restart=on-failure
+RestartSec=2s
+TimeoutStopSec=15s
+UMask=0077
+MemoryMax=256M
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectHome=true
+ProtectSystem=strict
+StateDirectory=codboz
+StateDirectoryMode=0700
+RestrictAddressFamilies=AF_UNIX AF_INET AF_INET6
+
+[Install]
+WantedBy=multi-user.target
