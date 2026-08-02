@@ -11,9 +11,6 @@ func TestMemoryMatchmakingStoreLifecycleAndOwnership(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if store.HasSessions() {
-		t.Fatal("new store reports an active session")
-	}
 	random := bytes.NewReader([]byte{
 		1, 2, 3, 4, 5, 6, 7, 8,
 		9, 10, 11, 12, 13, 14, 15, 16,
@@ -21,9 +18,6 @@ func TestMemoryMatchmakingStoreLifecycleAndOwnership(t *testing.T) {
 	first, err := store.Create(10, matchmakingFixture(), random)
 	if err != nil {
 		t.Fatal(err)
-	}
-	if !store.HasSessions() {
-		t.Fatal("store does not report its active session")
 	}
 	if first.SessionID != (MatchmakingSessionID{1, 2, 3, 4, 5, 6, 7, 8}) || first.NumPlayers != 1 {
 		t.Fatalf("first session = %#v", first)
@@ -74,9 +68,6 @@ func TestMemoryMatchmakingStoreLifecycleAndOwnership(t *testing.T) {
 	}
 	if _, total := store.Find(query, 0, 2); total != 0 {
 		t.Fatalf("total after delete = %d, want 0", total)
-	}
-	if store.HasSessions() {
-		t.Fatal("empty store reports an active session")
 	}
 }
 

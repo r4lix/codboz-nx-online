@@ -2,7 +2,6 @@ package stun
 
 import (
 	"bytes"
-	"encoding/binary"
 	"encoding/hex"
 	"errors"
 	"net/netip"
@@ -110,21 +109,6 @@ func TestBuildBindingResponseExactWireLayout(t *testing.T) {
 	}
 	if len(response) != BindingResponseSize {
 		t.Fatalf("len(response) = %d, want %d", len(response), BindingResponseSize)
-	}
-}
-
-func TestAppendMatchmakingMode(t *testing.T) {
-	response := make([]byte, BindingResponseSize)
-	binary.BigEndian.PutUint16(response[2:4], BindingResponseSize-HeaderSize)
-	response = appendMatchmakingMode(response, 1)
-	if len(response) != BindingResponseSize+8 {
-		t.Fatalf("response length = %d", len(response))
-	}
-	if bodyLength := binary.BigEndian.Uint16(response[2:4]); bodyLength != BindingResponseSize+8-HeaderSize {
-		t.Fatalf("declared body length = %d", bodyLength)
-	}
-	if !bytes.Equal(response[len(response)-8:], mustDecodeHex(t, "c0d00004424f5a01")) {
-		t.Fatalf("mode attribute = %x", response[len(response)-8:])
 	}
 }
 

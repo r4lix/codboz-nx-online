@@ -157,13 +157,6 @@ func (store *MemoryMatchmakingStore) Find(query MatchmakingQuery, offset, maximu
 	return result, total
 }
 
-func (store *MemoryMatchmakingStore) HasSessions() bool {
-	store.mu.RLock()
-	hasSessions := len(store.byID) != 0
-	store.mu.RUnlock()
-	return hasSessions
-}
-
 func matchesQuery(info MatchmakingInfo, query MatchmakingQuery) bool {
 	if info.Attributes.AppI32At15C != query.Value {
 		return false

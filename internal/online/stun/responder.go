@@ -6,32 +6,15 @@ import (
 	"io"
 	"net"
 	"net/netip"
-	"sync"
-	"time"
-)
-
-const (
-	publisherLease = 10 * time.Second
-	peerModeTTL    = 5 * time.Minute
-	maxPeerModes   = 4096
 )
 
 type ResponderConfig struct {
 	SourceAddress  netip.AddrPort
 	ChangedAddress netip.AddrPort
-	HasSessions    func() bool
 }
 
 type Responder struct {
-	config         ResponderConfig
-	mu             sync.Mutex
-	publisherUntil time.Time
-	peerModes      map[netip.AddrPort]peerMode
-}
-
-type peerMode struct {
-	value     byte
-	expiresAt time.Time
+	config ResponderConfig
 }
 
 func NewResponder(config ResponderConfig) (*Responder, error) {
@@ -43,7 +26,7 @@ func NewResponder(config ResponderConfig) (*Responder, error) {
 	if err != nil {
 		return nil, fmt.Errorf("configure STUN responder: %w", err)
 	}
-	return &Responder{config: config, peerModes: make(map[netip.AddrPort]peerMode)}, nil
+	return &Responder{config: config}, nil
 }
 
 func (responder *Responder) HandleUDP(ctx context.Context, connection net.PacketConn, peer net.Addr, payload []byte) error {
@@ -66,7 +49,6 @@ func (responder *Responder) HandleUDP(ctx context.Context, connection net.Packet
 	if err != nil {
 		return fmt.Errorf("build STUN response: %w", err)
 	}
-	response = appendMatchmakingMode(response, responder.matchmakingMode(mappedAddress, time.Now()))
 	written, err := connection.WriteTo(response, peer)
 	if err != nil {
 		return fmt.Errorf("write STUN response: %w", err)
@@ -75,30 +57,6 @@ func (responder *Responder) HandleUDP(ctx context.Context, connection net.Packet
 		return io.ErrShortWrite
 	}
 	return nil
-}
-
-func (responder *Responder) matchmakingMode(peer netip.AddrPort, now time.Time) byte {
-	responder.mu.Lock()
-	defer responder.mu.Unlock()
-	if cached, ok := responder.peerModes[peer]; ok && now.Before(cached.expiresAt) {
-		return cached.value
-	}
-	for endpoint, cached := range responder.peerModes {
-		if !now.Before(cached.expiresAt) {
-			delete(responder.peerModes, endpoint)
-		}
-	}
-	if len(responder.peerModes) >= maxPeerModes {
-		return 1
-	}
-	mode := byte(1)
-	hasSessions := responder.config.HasSessions != nil && responder.config.HasSessions()
-	if !hasSessions && !now.Before(responder.publisherUntil) {
-		mode = 0
-		responder.publisherUntil = now.Add(publisherLease)
-	}
-	responder.peerModes[peer] = peerMode{value: mode, expiresAt: now.Add(peerModeTTL)}
-	return mode
 }
 
 func udpAddrPort(peer net.Addr) (netip.AddrPort, bool) {
