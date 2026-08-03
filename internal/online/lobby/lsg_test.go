@@ -9,8 +9,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/Producdevity/cod-boz-netplay/internal/online/auth"
-	"github.com/Producdevity/cod-boz-netplay/internal/online/bitdemon"
+	"github.com/Producdevity/cod-boz-online/internal/online/auth"
+	"github.com/Producdevity/cod-boz-online/internal/online/bitdemon"
 )
 
 func TestParseLSGLoginBody(t *testing.T) {

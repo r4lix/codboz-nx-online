@@ -11,9 +11,9 @@ import (
 	"net"
 	"time"
 
-	"github.com/Producdevity/cod-boz-netplay/internal/online/auth"
-	"github.com/Producdevity/cod-boz-netplay/internal/online/bitdemon"
-	"github.com/Producdevity/cod-boz-netplay/internal/online/lobby"
+	"github.com/Producdevity/cod-boz-online/internal/online/auth"
+	"github.com/Producdevity/cod-boz-online/internal/online/bitdemon"
+	"github.com/Producdevity/cod-boz-online/internal/online/lobby"
 )
 
 const (

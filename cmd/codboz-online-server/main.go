@@ -14,11 +14,11 @@ import (
 	"syscall"
 	"time"
 
-	onlineauth "github.com/Producdevity/cod-boz-netplay/internal/online/auth"
-	"github.com/Producdevity/cod-boz-netplay/internal/online/backend"
-	"github.com/Producdevity/cod-boz-netplay/internal/online/lobby"
-	onlineserver "github.com/Producdevity/cod-boz-netplay/internal/online/server"
-	"github.com/Producdevity/cod-boz-netplay/internal/online/stun"
+	onlineauth "github.com/Producdevity/cod-boz-online/internal/online/auth"
+	"github.com/Producdevity/cod-boz-online/internal/online/backend"
+	"github.com/Producdevity/cod-boz-online/internal/online/lobby"
+	onlineserver "github.com/Producdevity/cod-boz-online/internal/online/server"
+	"github.com/Producdevity/cod-boz-online/internal/online/stun"
 )
 
 type options struct {

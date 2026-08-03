@@ -5,7 +5,7 @@ import (
 	"errors"
 	"testing"
 
-	"github.com/Producdevity/cod-boz-netplay/internal/online/bitdemon"
+	"github.com/Producdevity/cod-boz-online/internal/online/bitdemon"
 )
 
 func TestParseEventLogRequest(t *testing.T) {

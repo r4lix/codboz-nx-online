@@ -12,7 +12,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/Producdevity/cod-boz-netplay/internal/online/stun"
+	"github.com/Producdevity/cod-boz-online/internal/online/stun"
 )
 
 func testLogger() *log.Logger {

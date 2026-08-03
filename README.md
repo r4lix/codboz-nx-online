@@ -1,4 +1,4 @@
-# cod-boz-netplay
+# cod-boz-online
 
 Self-hosted Play Online backend for
 [`cod-boz-port`](https://github.com/Producdevity/cod-boz-port).

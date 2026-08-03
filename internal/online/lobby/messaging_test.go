@@ -8,7 +8,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/Producdevity/cod-boz-netplay/internal/online/bitdemon"
+	"github.com/Producdevity/cod-boz-online/internal/online/bitdemon"
 )
 
 func TestParseMessagingRequestGolden(t *testing.T) {
