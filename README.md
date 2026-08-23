@@ -10,6 +10,11 @@ they configure the same server.
 Two physical devices have completed a match through this server on a routed
 local network. Play across separate Internet connections still needs testing.
 
+## Server
+
+Running on `134.209.119.3`.
+
+
 ## Run locally
 
 The server listens on TCP 3074 and UDP 3478:
