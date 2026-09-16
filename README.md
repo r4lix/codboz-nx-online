@@ -38,7 +38,7 @@ See [docs/native-online.md](docs/native-online.md) for protocol notes and
 ## Docker and Unraid
 
 ```sh
-docker run -d --name codboz-online --network host --restart unless-stopped \n  -e CODBOZ_STUN_ADDRESS=auto -v /srv/codboz:/data \n  ghcr.io/r4lix/cod-boz-online:latest
+docker run -d --name codboz-online --network host --restart unless-stopped \n  -e CODBOZ_STUN_ADDRESS=auto -v /srv/codboz:/data \n  ghcr.io/r4lix/codboz-nx-online:latest
 ```
 
 Host networking is required for peer-to-peer play. See

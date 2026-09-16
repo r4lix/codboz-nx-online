@@ -8,7 +8,7 @@
 # come from the Docker gateway, and peer-to-peer play would fail.
 services:
   codboz-online:
-    image: ghcr.io/r4lix/cod-boz-online:latest
+    image: ghcr.io/r4lix/codboz-nx-online:latest
     # To build from this checkout instead of pulling:
     # build: .
     container_name: codboz-online

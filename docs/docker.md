@@ -1,6 +1,6 @@
 # Running in Docker (and on Unraid)
 
-The image is published to `ghcr.io/r4lix/cod-boz-online` for amd64 and arm64. It
+The image is published to `ghcr.io/r4lix/codboz-nx-online` for amd64 and arm64. It
 contains only the static server binary on a distroless, non-root base, and the
 tests run as part of every image build.
 
@@ -35,7 +35,7 @@ with several networks, set the address explicitly.
 docker run -d --name codboz-online --network host --restart unless-stopped \
   -e CODBOZ_STUN_ADDRESS=auto \
   -v /srv/codboz:/data \
-  ghcr.io/r4lix/cod-boz-online:latest
+  ghcr.io/r4lix/codboz-nx-online:latest
 ```
 
 The container runs as a non-root user. The data directory must be writable by
@@ -50,7 +50,7 @@ and run `docker compose up -d`.
 ## Unraid
 
 1. **Docker** tab, **Add Container**, then paste this into **Template**:
-   `https://raw.githubusercontent.com/r4lix/cod-boz-online/master/unraid/codboz-online.xml`
+   `https://raw.githubusercontent.com/r4lix/codboz-nx-online/master/unraid/codboz-online.xml`
    (or copy `unraid/codboz-online.xml` to
    `/boot/config/plugins/dockerMan/templates-user/my-codboz-online.xml`).
 2. Keep **Network Type** on `host`, and **STUN address** on `auto` for LAN play.

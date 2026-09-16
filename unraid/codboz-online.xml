@@ -1,18 +1,18 @@
 <?xml version="1.0"?>
 <Container version="2">
   <Name>codboz-online</Name>
-  <Repository>ghcr.io/r4lix/cod-boz-online:latest</Repository>
-  <Registry>https://github.com/r4lix/cod-boz-online/pkgs/container/cod-boz-online</Registry>
+  <Repository>ghcr.io/r4lix/codboz-nx-online:latest</Repository>
+  <Registry>https://github.com/r4lix/codboz-nx-online/pkgs/container/cod-boz-online</Registry>
   <Network>host</Network>
   <MyIP/>
   <Shell>sh</Shell>
   <Privileged>false</Privileged>
-  <Support>https://github.com/r4lix/cod-boz-online/issues</Support>
-  <Project>https://github.com/r4lix/cod-boz-online</Project>
+  <Support>https://github.com/r4lix/codboz-nx-online/issues</Support>
+  <Project>https://github.com/r4lix/codboz-nx-online</Project>
   <Overview>Self-hosted Play Online server for Call of Duty: Black Ops Zombies ports (PS Vita, PortMaster, Nintendo Switch). Handles login, matchmaking and peer signalling; gameplay stays peer to peer. Uses host networking on purpose: players must be seen with their real addresses for peer-to-peer play to work. Point each game at this server with multiplayer_server=UNRAID_IP in its config.txt.</Overview>
   <Category>GameServers:</Category>
   <WebUI/>
-  <TemplateURL>https://raw.githubusercontent.com/r4lix/cod-boz-online/master/unraid/codboz-online.xml</TemplateURL>
+  <TemplateURL>https://raw.githubusercontent.com/r4lix/codboz-nx-online/master/unraid/codboz-online.xml</TemplateURL>
   <Icon/>
   <ExtraParams>--user 99:100</ExtraParams>
   <PostArgs/>
