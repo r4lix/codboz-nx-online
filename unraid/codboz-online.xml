@@ -2,7 +2,7 @@
 <Container version="2">
   <Name>codboz-online</Name>
   <Repository>ghcr.io/r4lix/codboz-nx-online:latest</Repository>
-  <Registry>https://github.com/r4lix/codboz-nx-online/pkgs/container/cod-boz-online</Registry>
+  <Registry>https://github.com/r4lix/codboz-nx-online/pkgs/container/codboz-nx-online</Registry>
   <Network>host</Network>
   <MyIP/>
   <Shell>sh</Shell>
