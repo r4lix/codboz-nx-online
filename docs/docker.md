@@ -61,8 +61,20 @@ and run `docker compose up -d`.
 Every player in a match must use the same server:
 
 ```text
-multiplayer_server=UNRAID_IP
+multiplayer_server=boz-nx-online.example.org
 ```
+
+An IP address works too. A DNS name is easier to hand out and survives a new
+public IP, with three rules:
+
+- The record must point **directly** at your public IP. A proxied record
+  (Cloudflare's orange cloud, or any HTTP reverse proxy such as Zoraxy or
+  Nginx Proxy Manager) cannot carry the game's raw TCP and UDP, and even a
+  TCP/UDP stream proxy hides players' real addresses, which breaks STUN and
+  peer-to-peer play.
+- Forward TCP 3074 and UDP 3478 on the router straight to the Docker host.
+- `CODBOZ_STUN_ADDRESS` must still be an IP (`PUBLIC_IP:3478`). If your public
+  IP changes, update it along with the DNS record.
 
 ## Settings
 
