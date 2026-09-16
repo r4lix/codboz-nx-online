@@ -16,6 +16,9 @@ concurrency:
 jobs:
   deploy:
     name: Production
+    # Forks and self-hosters without the VPS secrets should not fail on every
+    # push. Set the repository variable DEPLOY_ENABLED=true to deploy.
+    if: vars.DEPLOY_ENABLED == 'true'
     runs-on: ubuntu-latest
     timeout-minutes: 15
     environment: production

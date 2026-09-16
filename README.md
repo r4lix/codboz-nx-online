@@ -35,6 +35,16 @@ multiplayer_proxy=0
 See [docs/native-online.md](docs/native-online.md) for protocol notes and
 [docs/deployment.md](docs/deployment.md) for self hosting this server.
 
+## Docker and Unraid
+
+```sh
+docker run -d --name codboz-online --network host --restart unless-stopped \n  -e CODBOZ_STUN_ADDRESS=auto -v /srv/codboz:/data \n  ghcr.io/r4lix/cod-boz-online:latest
+```
+
+Host networking is required for peer-to-peer play. See
+[docs/docker.md](docs/docker.md) for compose, the Unraid template, internet
+hosting and every setting.
+
 ## Development
 
 Go 1.26 or newer is required.

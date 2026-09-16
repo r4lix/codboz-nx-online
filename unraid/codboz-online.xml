@@ -1,0 +1,29 @@
+<?xml version="1.0"?>
+<Container version="2">
+  <Name>codboz-online</Name>
+  <Repository>ghcr.io/r4lix/cod-boz-online:latest</Repository>
+  <Registry>https://github.com/r4lix/cod-boz-online/pkgs/container/cod-boz-online</Registry>
+  <Network>host</Network>
+  <MyIP/>
+  <Shell>sh</Shell>
+  <Privileged>false</Privileged>
+  <Support>https://github.com/r4lix/cod-boz-online/issues</Support>
+  <Project>https://github.com/r4lix/cod-boz-online</Project>
+  <Overview>Self-hosted Play Online server for Call of Duty: Black Ops Zombies ports (PS Vita, PortMaster, Nintendo Switch). Handles login, matchmaking and peer signalling; gameplay stays peer to peer. Uses host networking on purpose: players must be seen with their real addresses for peer-to-peer play to work. Point each game at this server with multiplayer_server=UNRAID_IP in its config.txt.</Overview>
+  <Category>GameServers:</Category>
+  <WebUI/>
+  <TemplateURL>https://raw.githubusercontent.com/r4lix/cod-boz-online/master/unraid/codboz-online.xml</TemplateURL>
+  <Icon/>
+  <ExtraParams>--user 99:100</ExtraParams>
+  <PostArgs/>
+  <CPUset/>
+  <DonateText/>
+  <DonateLink/>
+  <Requires>Host networking. TCP 3074 and UDP 3478 must be free on the Unraid host; forward both from your router only if players join over the internet.</Requires>
+  <Config Name="STUN address" Target="CODBOZ_STUN_ADDRESS" Default="auto" Mode="" Description="What the server tells players its STUN endpoint is. 'auto' uses the Unraid host's LAN address (LAN play). For internet play use PUBLIC_IP:3478 and forward TCP 3074 and UDP 3478 to this host." Type="Variable" Display="always" Required="true" Mask="false">auto</Config>
+  <Config Name="App data" Target="/data" Default="/mnt/user/appdata/codboz-online" Mode="rw" Description="Player accounts (accounts.json). Back this up to keep accounts across reinstalls." Type="Path" Display="always" Required="true" Mask="false">/mnt/user/appdata/codboz-online</Config>
+  <Config Name="Max TCP connections" Target="CODBOZ_MAX_TCP_CONNECTIONS" Default="64" Mode="" Description="Total concurrent TCP connections (1-1024)." Type="Variable" Display="advanced" Required="false" Mask="false">64</Config>
+  <Config Name="Max TCP connections per source" Target="CODBOZ_MAX_TCP_CONNECTIONS_PER_SOURCE" Default="8" Mode="" Description="Per source IP (1-256). Each player keeps one lobby connection plus brief login connections; raise it when several players share one public IP." Type="Variable" Display="advanced" Required="false" Mask="false">8</Config>
+  <Config Name="TCP listen" Target="CODBOZ_TCP_LISTEN" Default="0.0.0.0:3074" Mode="" Description="Login and lobby listener. The games connect to port 3074; change only if you also redirect it." Type="Variable" Display="advanced" Required="false" Mask="false">0.0.0.0:3074</Config>
+  <Config Name="UDP listen" Target="CODBOZ_UDP_LISTEN" Default="0.0.0.0:3478" Mode="" Description="STUN listener. The games use port 3478." Type="Variable" Display="advanced" Required="false" Mask="false">0.0.0.0:3478</Config>
+</Container>

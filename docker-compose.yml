@@ -1,0 +1,26 @@
+# COD BOZ Play Online server.
+#
+#   docker compose up -d
+#
+# Host networking is required, not a preference: the server tells each player
+# the address it sees them connect from (STUN), and players then connect to
+# each other directly. Behind Docker's bridge NAT every player would appear to
+# come from the Docker gateway, and peer-to-peer play would fail.
+services:
+  codboz-online:
+    image: ghcr.io/r4lix/cod-boz-online:latest
+    # To build from this checkout instead of pulling:
+    # build: .
+    container_name: codboz-online
+    network_mode: host
+    restart: unless-stopped
+    environment:
+      # "auto" advertises this host's LAN address -- right for playing on your
+      # own network. For players over the internet, use PUBLIC_IP:3478 and
+      # forward TCP 3074 and UDP 3478 to this host.
+      CODBOZ_STUN_ADDRESS: auto
+      # Raise if several players share one public IP (each keeps one lobby
+      # connection, plus brief login connections).
+      CODBOZ_MAX_TCP_CONNECTIONS_PER_SOURCE: "8"
+    volumes:
+      - ./data:/data

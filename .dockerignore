@@ -1,0 +1,10 @@
+.git
+.github
+.idea
+.vscode
+dist
+bin
+data
+*.test
+*.prof
+coverage.out
